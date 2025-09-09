@@ -51,10 +51,23 @@ int search_symbol(char *label) {
 }
 
 void add_symbol(char *label, int address) {
-  if (symcount < MAX_LABEL) {
+  if (symtab_size < MAX_LABEL) {
     strcpy(symtab[symtab_size].label, label);
     symtab[symtab_size].address = address;
+    symtab_size++;
   }
+}
+
+int is_opcode(char *opcode) {
+  const char *optable[] = {"LDA", "STA", "LDX", "STX",  "ADD", "SUB",
+                           "MUL", "DIV", "JMP", "JSUB", NULL};
+  int i = 0;
+  while (optable[i] != NULL) {
+    if (strcmp(opcode, optable[i]) == 0)
+      return 1;
+    i++;
+  }
+  return 0;
 }
 
 void main() {
@@ -103,5 +116,37 @@ void main() {
     }
 
     fprintf(intermediate, "%04X\t%s", locctr, line);
+
+    if (is_opcode(opcode))
+      locctr += 3;
+    else if (strcmp(opcode, "WORD") == 0)
+      locctr += 3;
+    else if (strcmp(opcode, "RESW") == 0)
+      locctr += 3 * atoi(operand);
+    else if (strcmp(opcode, "RESB") == 0)
+      locctr += atoi(operand);
+    else if (strcmp(opcode, "BYTE") == 0) {
+      if (operand[0] == 'C') {
+        int len = strlen(operand) - 3; // subtract C' and '
+        locctr += len;
+      } else if (operand[0] == 'X') {
+        int len = (strlen(operand) - 3 + 1) / 2; // each hex digit is half byte
+        locctr += len;
+      }
+    } else
+      printf("Warning: Unknown opcode/directive %s\n", opcode);
+    fgets(line, MAX_LINE, input);
   }
+
+  FILE *symtab_file = fopen("symtab.txt", "w");
+  if (symtab_file == NULL) {
+    printf("Error creating symtab file.\n");
+    return;
+  }
+
+  for (int i = 0; i < symtab_size; i++) {
+    fprintf(symtab_file, "%s\t%04X\n", symtab[i].label, symtab[i].address);
+  }
+
+  fclose(symtab_file);
 }
