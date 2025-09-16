@@ -1,0 +1,14 @@
+1000	**      START   1000
+1000	**      LDD     ALPHA
+1003	**      ADD     ONE
+1006	**      SUB     TWO
+1009	**      STA     BETA
+100C	ALPHA   WORD    8
+100F	ONE     WORD    1
+1012	TWO     WORD    2
+1015	BETA    RESW    1
+1018	TEMP    RESB    10
+1022	CHAR    BYTE    C'hello'
+1027	HEXVAL  BYTE    X'1F'
+		**      END     **
+

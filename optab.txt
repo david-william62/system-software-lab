@@ -1,0 +1,10 @@
+LDD    03
+STA    03
+ADD    03
+SUB    03
+MUL    03
+DIV    03
+JMP    03
+COMP   03
+JEQ    03
+JLT    03
